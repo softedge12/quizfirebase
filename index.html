@@ -45,13 +45,8 @@
     };
 
     // Initialize Firebase
-    let db;  // Declare db here so it is accessible inside login function
-
-    // Initialize Firebase on window load
-    window.onload = function() {
-      const app = firebase.initializeApp(firebaseConfig);
-      db = firebase.database();  // Firebase Realtime Database initialized here
-    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database(); // Firebase Realtime Database initialized here
 
     const pageID = "page1"; // Set pageID for the specific page you want
 
