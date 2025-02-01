@@ -3,6 +3,7 @@
 <head>
   <base target="_top">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
   <style>
@@ -27,7 +28,9 @@
       border-top-right-radius: 25px;
     }
   </style>
+
   <script>
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyA2xKyrBV9rO8vVMfzvxPMUAfV19y6eTeQ",
       authDomain: "educationalwebsite-2247d.firebaseapp.com",
@@ -38,17 +41,17 @@
       appId: "1:711744017075:web:11429b93a8767d9b2556c6"
     };
 
+    // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const db = firebase.database();  // Initialize Firebase Realtime Database
 
-    const pageID = "page1"; // वेब पेज 1 के लिए PageID
+    const pageID = "page1"; // Set pageID for the specific page you want
 
-    function login(event) {
-      event.preventDefault();  // यह लाइन फ़ॉर्म सबमिट के समय पेज को रीलोड होने से रोकता है।
-
+    function login() {
       const email = document.getElementById("uid").value;
       const password = document.getElementById("pass").value;
 
+      // Check users in Firebase Realtime Database
       const dbRef = db.ref('webpages/' + pageID + '/users');
       dbRef.once('value', (snapshot) => {
         let isAuthenticated = false;
@@ -58,7 +61,7 @@
             const expiryDate = new Date(userData.expiryDate);
             if (expiryDate >= new Date()) {
               isAuthenticated = true;
-              window.location.href = "main.html";
+              window.location.href = "main.html";  // Redirect to main page on success
             } else {
               alert("Your account has expired.");
             }
@@ -80,19 +83,16 @@
   <div class="card shadow rounded">
     <h5 class="card-header text-white p-3">Login for Page 1</h5>
     <div class="card-body p-4">
-      <!-- Form added here -->
-      <form onsubmit="login(event)">
-        <div class="input-group mb-3">
-          <span class="input-group-text">User</span>
-          <input type="text" class="form-control" id="uid" placeholder="Email" onchange="clearMsg()">
-        </div>
-        <div class="input-group mb-3">
-          <span class="input-group-text">Password</span>
-          <input type="password" class="form-control" id="pass" placeholder="Password" onchange="clearMsg()">
-        </div>
-        <div id="RetMsg" class="alert alert-danger" style="display:none"></div>
-        <button type="submit" class="btn btn-primary float-end px-5">Login</button>
-      </form>
+      <div class="input-group mb-3">
+        <span class="input-group-text">User</span>
+        <input type="text" class="form-control" id="uid" placeholder="Email" onchange="clearMsg()">
+      </div>
+      <div class="input-group mb-3">
+        <span class="input-group-text">Password</span>
+        <input type="password" class="form-control" id="pass" placeholder="Password" onchange="clearMsg()">
+      </div>
+      <div id="RetMsg" class="alert alert-danger" style="display:none"></div>
+      <button type="button" class="btn btn-primary float-end px-5" onclick="login()">Login</button>
     </div>
   </div>
 </body>
