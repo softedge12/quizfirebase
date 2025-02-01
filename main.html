@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Educational Website</title>
+  <style>
+    /* General Styles */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #e3f2fd, #ffffff);
+      overflow-x: hidden;
+    }
+
+    /* Navigation Menu */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #3275F9;
+      color: white;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu {
+      display: none;
+      flex-direction: column;
+      background-color: white;
+      color: #3275F9;
+      position: absolute;
+      top: 50px;
+      left: 10px;
+      border: 1px solid #3275F9;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .menu a {
+      text-decoration: none;
+      padding: 10px 15px;
+      color: #3275F9;
+      display: block;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .menu a:hover {
+      background-color: #3275F9;
+      color: white;
+    }
+
+    .menu-toggle {
+      background-color: #fff;
+      color: #3275F9;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .menu-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    /* Section Styles */
+    .section {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      height: calc(100vh - 60px);
+      display: none;
+      text-align: center;
+      padding: 20px;
+      background: white;
+      overflow-y: auto;
+      backface-visibility: hidden;
+      transform: rotateY(90deg);
+      opacity: 0;
+      transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+
+    .section.active {
+      display: block;
+      opacity: 1;
+      transform: rotateY(0);
+    }
+
+    .section h1 {
+      margin-top: 20px;
+      font-size: 2rem;
+      color: #3275F9;
+    }
+
+    .section p {
+      font-size: 1.2rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <div class="navbar">
+    <button class="menu-toggle" onclick="toggleMenu()">Menu</button>
+    <div class="menu" id="menu">
+      <a onclick="showSection('home')">Home</a>
+      <a onclick="showSection('quiz')">Quiz</a>
+      <a onclick="showSection('book')">Books</a>
+      <a onclick="showSection('notification')">Notifications</a>
+      <a onclick="logOut()">Log Out</a>
+    </div>
+  </div>
+
+  <!-- Home Section -->
+  <div class="section active" id="home">
+    <h1>Welcome to the Educational Website</h1>
+    <p>This is the home section. Explore our resources to learn and grow!</p>
+    <center>
+      <iframe src="https://drive.google.com/file/d/1rvJ8ip-KAUdlZVi-oZEOtr8vpwJHQDqi/preview?usp=sharing" 
+        width="100%" height="600" style="border: none;"></iframe>
+    </center>
+  </div>
+
+  <!-- Quiz Section -->
+  <div class="section" id="quiz">
+    <h1>Quiz Section</h1>
+    <p>Test your knowledge with our fun and interactive quizzes!</p>
+    <iframe src="https://script.google.com/macros/s/AKfycbw1aY5QlnWf7J0bE-IhArpOPa1szXaAv_R8_q4rfU6Eno8YH_xzbRTMA35E0MMpKOHk/exec" 
+      width="100%" height="800" style="border:1px solid black;">
+    </iframe>
+  </div>
+
+  <div class="section" id="book">
+    <h1>Books Section</h1>
+    <p>Discover a variety of educational books to enhance your skills.</p>
+    <iframe src="https://drive.google.com/file/d/1rvJ8ip-KAUdlZVi-oZEOtr8vpwJHQDqi/preview?usp=sharing" 
+      width="100%" height="600" style="border: none;"></iframe>
+  </div>
+
+  <div class="section" id="notification">
+    <h1>Notifications Section</h1>
+    <p>Stay updated with the latest news and announcements.</p>
+    <iframe src="https://drive.google.com/file/d/1rvJ8ip-KAUdlZVi-oZEOtr8vpwJHQDqi/preview?usp=sharing" 
+      width="100%" height="600" style="border: none;"></iframe>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "your-api-key",
+      authDomain: "your-auth-domain",
+      databaseURL: "your-database-url",
+      projectId: "your-project-id",
+      storageBucket: "your-storage-bucket",
+      messagingSenderId: "your-messaging-sender-id",
+      appId: "your-app-id"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function showSection(sectionId) {
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(section => {
+        section.classList.toggle('active', section.id === sectionId);
+      });
+      toggleMenu();
+    }
+
+    function logOut() {
+      auth.signOut()
+        .then(() => {
+          alert("Logged out successfully!");
+          window.location.href = "index.html";
+        })
+        .catch(error => alert("Error: " + error.message));
+    }
+
+    // User Validation and Expiry Check
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        const uid = user.uid;
+        db.ref(`users/${uid}`).once('value')
+          .then(snapshot => {
+            const userData = snapshot.val();
+            if (!userData) {
+              alert("Invalid User!");
+              auth.signOut();
+              window.location.href = "index.html";
+              return;
+            }
+            const expiryDate = new Date(userData.expiryDate);
+            const currentDate = new Date();
+            if (expiryDate < currentDate) {
+              alert("Your access has expired.");
+              auth.signOut();
+              window.location.href = "index.html";
+            }
+          });
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    // Disable back button after logout
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = function () {
+      window.history.pushState(null, "", window.location.href);
+    };
+  </script>
+</body>
+</html>
